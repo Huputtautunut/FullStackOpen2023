@@ -1,13 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Filter from './Filter';
 import PersonForm from './PersonForm';
 import Persons from './Persons';
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '123-456-7890' },
-    // Add more persons as needed
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNumber, setNewNumber] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -42,6 +39,14 @@ const App = () => {
     setNewName('');
     setNewNumber('');
   };
+
+  useEffect(() => {
+    // Fetch data from the JSON server
+    fetch('http://localhost:3001/persons')
+      .then((response) => response.json())
+      .then((data) => setPersons(data))
+      .catch((error) => console.error('Error fetching data:', error));
+  }, []); // The empty dependency array ensures this effect runs only once when the component mounts
 
   // Filter the persons based on the search term
   const filteredPersons = persons.filter((person) =>
