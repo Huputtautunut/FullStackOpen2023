@@ -1,6 +1,14 @@
 const express = require('express');
+const morgan = require('morgan');
+const cors = require('cors');
+
+
 const app = express();
 const port = 3001;
+
+app.use(morgan('tiny'));
+app.use(express.json()); // Enable JSON parsing for request bodies
+app.use(cors());
 
 const phonebookEntries = [
     {
@@ -25,6 +33,11 @@ const phonebookEntries = [
     }
 ];
 
+function generateRandomId() {
+    // Generate a random integer between 100000 and 999999
+    return Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
+}
+
 app.get('/api/persons', (req, res) => {
     res.json(phonebookEntries);
 });
@@ -38,6 +51,29 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.status(404).json({ error: 'Person not found' });
     }
+});
+
+app.post('/api/persons', (req, res) => {
+    const body = req.body;
+
+    if (!body.name || !body.number) {
+        return res.status(400).json({ error: 'Name and number are required' });
+    }
+
+    const existingPerson = phonebookEntries.find(entry => entry.name === body.name);
+    if (existingPerson) {
+        return res.status(400).json({ error: 'Name must be unique' });
+    }
+
+    const newPerson = {
+        id: generateRandomId(),
+        name: body.name,
+        number: body.number
+    };
+
+    phonebookEntries.push(newPerson);
+
+    res.json(newPerson);
 });
 
 app.get('/info', (req, res) => {
