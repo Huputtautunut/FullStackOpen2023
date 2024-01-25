@@ -10,9 +10,9 @@ primary_region = "arn"
 
  [build.services]
     [build.services.backend]
-      handler = "node"
-      # Set the path to your index.js file
-      command = "node index.js"
+     handler = "npm"
+     command = ["start"]
+
 
 [env]
 PORT = "3001" # add this

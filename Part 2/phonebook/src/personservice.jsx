@@ -1,4 +1,5 @@
-const baseUrl = 'http://localhost:3001/api/persons';
+const baseUrl = 'https://phonebook-backend1.fly.dev/api/persons';
+
 
 const getAll = () => {
   return fetch(baseUrl)
