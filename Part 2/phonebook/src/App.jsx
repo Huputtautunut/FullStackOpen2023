@@ -99,6 +99,7 @@ const App = () => {
     // Display the message with the specified style
     alert(message, className);
   };
+
   
   const deletePerson = (id) => {
     const personToDelete = persons.find((person) => person.id === id);

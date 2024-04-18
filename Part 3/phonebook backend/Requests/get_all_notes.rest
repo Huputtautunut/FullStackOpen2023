@@ -1,7 +1,1 @@
-POST http://localhost:3001/api/persons
-Content-Type: application/json
-
-{
-    "name": "Testing",
-    "number": "123-123-000"
-}
+DELETE  https://phonebook-backend1.fly.dev/api/persons/3
