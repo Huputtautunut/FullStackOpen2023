@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3001;
 
-const phonebookEntries = [
+let phonebookEntries = [
     {
         "id": 1,
         "name": "Arto Hellas",
@@ -25,6 +25,8 @@ const phonebookEntries = [
     }
 ];
 
+app.use(express.json());
+
 app.get('/api/persons', (req, res) => {
     res.json(phonebookEntries);
 });
@@ -38,6 +40,12 @@ app.get('/api/persons/:id', (req, res) => {
     } else {
         res.status(404).json({ error: 'Person not found' });
     }
+});
+
+app.delete('/api/persons/:id', (req, res) => {
+    const personId = parseInt(req.params.id);
+    phonebookEntries = phonebookEntries.filter(entry => entry.id !== personId);
+    res.status(204).end();
 });
 
 app.get('/info', (req, res) => {
