@@ -1,5 +1,4 @@
-const baseUrl = 'https://phonebook-backend1.fly.dev/api/persons';
-
+const baseUrl = 'http://localhost:3001/persons';
 
 const getAll = () => {
   return fetch(baseUrl)
@@ -25,27 +24,16 @@ const create = newPerson => {
     });
 };
 
-
-const deletePerson = (id) => {
+const deletePerson = (id) => { // Changed the function name here
   return fetch(`${baseUrl}/${id}`, {
     method: 'DELETE',
   })
-  .then(response => {
-    console.log('DELETE request to:', url);
-    console.log('Response status:', response.status);
-
-    if (!response.ok) {
-      throw new Error(`Error deleting person: ${response.statusText}`);
-    }
-
-    return response.json();
-  })
-  .catch(error => {
-    console.error('Error deleting person:', error.message);
-    throw error;
-  });
+    .then(response => response.json())
+    .catch(error => {
+      console.error('Error deleting person:', error);
+      throw error;
+    });
 };
-
 
 const updatePerson = (id, updatedPerson) => {
   return fetch(`${baseUrl}/${id}`, {
