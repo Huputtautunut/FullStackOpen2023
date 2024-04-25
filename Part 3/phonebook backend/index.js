@@ -48,6 +48,32 @@ app.delete('/api/persons/:id', (req, res) => {
     res.status(204).end();
 });
 
+app.post('/api/persons', (req, res) => {
+    const body = req.body;
+
+    // Check if name or number is missing
+    if (!body.name || !body.number) {
+        return res.status(400).json({ error: 'Name or number is missing' });
+    }
+
+    // Check if the name already exists in the phonebook
+    const existingPerson = phonebookEntries.find(entry => entry.name === body.name);
+    if (existingPerson) {
+        return res.status(400).json({ error: 'Name must be unique' });
+    }
+
+    // Create a new entry
+    const newEntry = {
+        id: generateId(),
+        name: body.name,
+        number: body.number
+    };
+
+    phonebookEntries = phonebookEntries.concat(newEntry);
+    res.json(newEntry);
+});
+
+
 app.get('/info', (req, res) => {
     const infoMessage = `Phonebook has info for ${phonebookEntries.length} people<br>${new Date()}`;
     res.send(infoMessage);
@@ -56,3 +82,9 @@ app.get('/info', (req, res) => {
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
 });
+
+function generateId() {
+    //const maxId = phonebookEntries.length > 0 ? Math.max(...phonebookEntries.map(entry => entry.id)) : 0;
+    //return maxId + 1;
+    return Math.floor(Math.random() * 1000000) + 1;
+}
