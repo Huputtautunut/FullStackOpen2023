@@ -1,6 +1,18 @@
 const express = require('express');
 const app = express();
 const port = 3001;
+const morgan = require('morgan');
+
+// Define a custom token format for morgan to log request body data for POST requests
+morgan.token('postData', (req) => {
+    if (req.method === 'POST') {
+        return JSON.stringify(req.body);
+    }
+    return '';
+});
+
+// Configure morgan middleware to log messages to the console based on the custom token format
+app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
 
 let phonebookEntries = [
     {
