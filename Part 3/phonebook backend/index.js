@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const port = 3001;
 const morgan = require('morgan');
+const cors = require('cors');
 
 // Define a custom token format for morgan to log request body data for POST requests
 morgan.token('postData', (req) => {
@@ -10,6 +11,10 @@ morgan.token('postData', (req) => {
     }
     return '';
 });
+
+app.use(morgan('tiny'));
+app.use(express.json()); // Enable JSON parsing for request bodies
+app.use(cors());
 
 // Configure morgan middleware to log messages to the console based on the custom token format
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
@@ -63,18 +68,15 @@ app.delete('/api/persons/:id', (req, res) => {
 app.post('/api/persons', (req, res) => {
     const body = req.body;
 
-    // Check if name or number is missing
     if (!body.name || !body.number) {
         return res.status(400).json({ error: 'Name or number is missing' });
     }
 
-    // Check if the name already exists in the phonebook
     const existingPerson = phonebookEntries.find(entry => entry.name === body.name);
     if (existingPerson) {
         return res.status(400).json({ error: 'Name must be unique' });
     }
 
-    // Create a new entry
     const newEntry = {
         id: generateId(),
         name: body.name,
@@ -85,6 +87,20 @@ app.post('/api/persons', (req, res) => {
     res.json(newEntry);
 });
 
+// PUT endpoint to update an existing phonebook entry by ID
+app.put('/api/persons/:id', (req, res) => {
+    const personId = parseInt(req.params.id);
+    const body = req.body;
+
+    const personIndex = phonebookEntries.findIndex(entry => entry.id === personId);
+    if (personIndex === -1) {
+        return res.status(404).json({ error: 'Person not found' });
+    }
+
+    const updatedPerson = { ...phonebookEntries[personIndex], ...body };
+    phonebookEntries[personIndex] = updatedPerson;
+    res.json(updatedPerson);
+});
 
 app.get('/info', (req, res) => {
     const infoMessage = `Phonebook has info for ${phonebookEntries.length} people<br>${new Date()}`;

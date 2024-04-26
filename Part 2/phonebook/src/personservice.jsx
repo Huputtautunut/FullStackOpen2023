@@ -1,4 +1,5 @@
-const baseUrl = 'http://localhost:3001/persons';
+// Import axios for making HTTP requests
+const baseUrl = 'http://localhost:3001/api/persons/';
 
 const getAll = () => {
   return fetch(baseUrl)
