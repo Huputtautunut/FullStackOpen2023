@@ -1,5 +1,5 @@
 // Import axios for making HTTP requests
-const baseUrl = 'api/persons/';
+const baseUrl = 'api/persons';
 
 const getAll = () => {
   return fetch(baseUrl)
@@ -25,7 +25,9 @@ const create = newPerson => {
     });
 };
 
-const deletePerson = (id) => { // Changed the function name here
+const deletePerson = (id) => {
+  const url = `${baseUrl}/${id}`;
+  console.log('Deleting person:', url);
   return fetch(`${baseUrl}/${id}`, {
     method: 'DELETE',
   })

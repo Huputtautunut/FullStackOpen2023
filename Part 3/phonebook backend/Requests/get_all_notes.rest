@@ -1,8 +1,2 @@
-POST https://phonebook-backend-spring24.fly.dev/api/persons
+DELETE https://phonebook-backend-spring24.fly.dev/api/persons/1
 Content-Type: application/json
-
-{
-    "name": "John Doe",
-    "number": "1234"
-}
-
