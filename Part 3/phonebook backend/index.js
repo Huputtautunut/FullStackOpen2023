@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const port = 3001;
+const port = process.env.PORT || 3001;
 const morgan = require('morgan');
 const cors = require('cors');
 
@@ -15,6 +15,9 @@ morgan.token('postData', (req) => {
 app.use(morgan('tiny'));
 app.use(express.json()); // Enable JSON parsing for request bodies
 app.use(cors());
+
+app.use(express.static('dist')) //Tis' the reason why we see frontend when opening site instead of json data
+
 
 // Configure morgan middleware to log messages to the console based on the custom token format
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
