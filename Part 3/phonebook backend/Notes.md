@@ -1,2 +1,11 @@
 Kirjoitan nyt tänne itelleni muistiin.
-Eli nyt on käytännössä tehty 3.11 asti nää tehtävät mutta jostain syystä kun deletoi ihmisiä, niin se sivu pitää manuaalisesti päivitää. Ei mitään hajua miksi
+Data noudetaan nyt mongosta ja lisääminen backendiin toimii mutta deletointi ei.
+
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "AnnE",
+    "number": "123123123"
+}
+

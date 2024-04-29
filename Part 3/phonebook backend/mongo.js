@@ -1,4 +1,10 @@
-const mongoose = require('mongoose');
+const mongoose = require('mongoose')
+
+// Define schema for phonebook entry
+const phonebookSchema = new mongoose.Schema({
+  name: String,
+  number: String
+})
 
 if (process.argv.length < 3) {
   console.log('Give the password as an argument');
@@ -7,55 +13,38 @@ if (process.argv.length < 3) {
 
 const password = process.argv[2];
 
-const url = `mongodb+srv://Johu:${password}@fullstack.hcnkqsq.mongodb.net/?retryWrites=true&w=majority&appName=FullStack`;
+// Create model for phonebook entry
+const PhonebookEntry = mongoose.model('PhonebookEntry', phonebookSchema)
 
-mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
+// Connect to MongoDB
+const url = `mongodb+srv://Johu:${password}@fullstack.hcnkqsq.mongodb.net/?retryWrites=true&w=majority&appName=FullStack` // Change URL as needed
+mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true })
 
-const phonebookEntrySchema = new mongoose.Schema({
-  name: String,
-  number: String,
-});
+// If only password provided, display all entries in phonebook
+if (process.argv.length === 3) {
+  PhonebookEntry.find({}).then(result => {
+    console.log('phonebook:')
+    result.forEach(entry => {
+      console.log(`${entry.name} ${entry.number}`)
+    })
+    mongoose.connection.close()
+  })
+} else if (process.argv.length === 5) {
+  const name = process.argv[3]
+  const number = process.argv[4]
 
-const PhonebookEntry = mongoose.model('PhonebookEntry', phonebookEntrySchema);
+  // Create new entry
+  const entry = new PhonebookEntry({
+    name: name,
+    number: number
+  })
 
-const handleAddEntry = () => {
-  if (process.argv.length !== 5) {
-    console.log('Invalid number of arguments for adding an entry');
-    mongoose.connection.close();
-    process.exit(1);
-  }
-
-  const name = process.argv[3];
-  const number = process.argv[4];
-
-  const newEntry = new PhonebookEntry({
-    name,
-    number,
-  });
-
-  newEntry.save().then(() => {
-    console.log(`added ${name} number ${number} to phonebook`);
-    mongoose.connection.close();
-  });
-};
-
-const handleDisplayEntries = async () => {
-  try {
-    const entries = await PhonebookEntry.find();
-    console.log('phonebook:');
-    entries.forEach((entry) => {
-      console.log(`${entry.name} ${entry.number}`);
-    });
-  } catch (error) {
-    console.error('Error fetching phonebook entries:', error);
-  } finally {
-    mongoose.connection.close();
-  }
-};
-
-// Check if additional arguments are provided
-if (process.argv.length > 3) {
-  handleAddEntry();
+  // Save the new entry
+  entry.save().then(() => {
+    console.log(`added ${name} number ${number} to phonebook`)
+    mongoose.connection.close()
+  })
 } else {
-  handleDisplayEntries();
+  console.log('Invalid number of arguments.')
+  process.exit(1)
 }

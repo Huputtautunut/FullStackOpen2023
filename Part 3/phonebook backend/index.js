@@ -1,121 +1,93 @@
+require('dotenv').config();
+
 const express = require('express');
 const app = express();
-const port = process.env.PORT || 3001;
+const PORT = process.env.PORT;
 const morgan = require('morgan');
 const cors = require('cors');
-
-// Define a custom token format for morgan to log request body data for POST requests
-morgan.token('postData', (req) => {
-    if (req.method === 'POST') {
-        return JSON.stringify(req.body);
-    }
-    return '';
-});
+const PhonebookEntry = require('./models/phonebook');
 
 app.use(morgan('tiny'));
-app.use(express.json()); // Enable JSON parsing for request bodies
-app.use(cors());
-
-app.use(express.static('dist')) //Tis' the reason why we see frontend when opening site instead of json data
-
-
-// Configure morgan middleware to log messages to the console based on the custom token format
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :postData'));
-
-let phonebookEntries = [
-    {
-        "id": 1,
-        "name": "Arto Hellas",
-        "number": "040-123456"
-    },
-    {
-        "id": 2,
-        "name": "Ada Lovelace",
-        "number": "39-44-5323523"
-    },
-    {
-        "id": 3,
-        "name": "Dan Abramov",
-        "number": "12-43-234345"
-    },
-    {
-        "id": 4,
-        "name": "Mary Poppendieck",
-        "number": "39-23-6423122"
-    }
-];
-
 app.use(express.json());
+app.use(cors());
+app.use(express.static('dist'));
 
-app.get('/api/persons', (req, res) => {
-    res.json(phonebookEntries);
+app.get('/api/persons', (req, res, next) => {
+    PhonebookEntry.find({})
+        .then(result => {
+            res.json(result);
+        })
+        .catch(error => next(error));
 });
 
-app.get('/api/persons/:id', (req, res) => {
-    const personId = parseInt(req.params.id);
-    const person = phonebookEntries.find(entry => entry.id === personId);
-
-    if (person) {
-        res.json(person);
-    } else {
-        res.status(404).json({ error: 'Person not found' });
-    }
+app.get('/api/persons/:id', (req, res, next) => {
+    PhonebookEntry.findById(req.params.id)
+        .then(phonebook => {
+            if (phonebook) {
+                res.json(phonebook);
+            } else {
+                res.status(404).end();
+            }
+        })
+        .catch(error => next(error));
 });
 
-app.delete('/api/persons/:id', (req, res) => {
-    const personId = parseInt(req.params.id);
-    phonebookEntries = phonebookEntries.filter(entry => entry.id !== personId);
-    res.status(204).end();
+app.delete('/api/persons/:id', (req, res, next) => {
+    PhonebookEntry.findByIdAndRemove(req.params.id)
+        .then(() => {
+            res.status(204).end();
+        })
+        .catch(error => next(error));
 });
 
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body;
 
     if (!body.name || !body.number) {
         return res.status(400).json({ error: 'Name or number is missing' });
     }
 
-    const existingPerson = phonebookEntries.find(entry => entry.name === body.name);
-    if (existingPerson) {
-        return res.status(400).json({ error: 'Name must be unique' });
-    }
-
-    const newEntry = {
-        id: generateId(),
+    const newEntry = new PhonebookEntry({
         name: body.name,
         number: body.number
-    };
+    });
 
-    phonebookEntries = phonebookEntries.concat(newEntry);
-    res.json(newEntry);
+    newEntry.save()
+        .then(savedEntry => {
+            res.json(savedEntry);
+        })
+        .catch(error => next(error));
 });
 
-// PUT endpoint to update an existing phonebook entry by ID
-app.put('/api/persons/:id', (req, res) => {
-    const personId = parseInt(req.params.id);
-    const body = req.body;
+app.put('/api/persons/:id', (req, res, next) => {
+    const { name, number } = req.body;
 
-    const personIndex = phonebookEntries.findIndex(entry => entry.id === personId);
-    if (personIndex === -1) {
-        return res.status(404).json({ error: 'Person not found' });
-    }
-
-    const updatedPerson = { ...phonebookEntries[personIndex], ...body };
-    phonebookEntries[personIndex] = updatedPerson;
-    res.json(updatedPerson);
+    PhonebookEntry.findByIdAndUpdate(
+        req.params.id,
+        { name, number },
+        { new: true, runValidators: true, context: 'query' }
+    )
+        .then(updatedPerson => {
+            res.json(updatedPerson);
+        })
+        .catch(error => next(error));
 });
 
-app.get('/info', (req, res) => {
-    const infoMessage = `Phonebook has info for ${phonebookEntries.length} people<br>${new Date()}`;
-    res.send(infoMessage);
+app.get('/info', (req, res, next) => {
+    PhonebookEntry.countDocuments({})
+        .then(count => {
+            const infoMessage = `Phonebook has info for ${count} people<br>${new Date()}`;
+            res.send(infoMessage);
+        })
+        .catch(error => next(error));
 });
 
-app.listen(port, () => {
-    console.log(`Server is running at http://localhost:${port}`);
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
-function generateId() {
-    //const maxId = phonebookEntries.length > 0 ? Math.max(...phonebookEntries.map(entry => entry.id)) : 0;
-    //return maxId + 1;
-    return Math.floor(Math.random() * 1000000) + 1;
-}
+app.listen(PORT, () => {
+    console.log(`Server is running at http://localhost:${PORT}`);
+});
+

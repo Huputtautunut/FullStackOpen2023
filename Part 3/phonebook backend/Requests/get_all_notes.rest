@@ -1,2 +1,2 @@
-DELETE https://phonebook-backend-spring24.fly.dev/api/persons/1
-Content-Type: application/json
+DELETE http://localhost:3001/api/persons/662f54f8ca81f7b8a37aface
+
