@@ -15,8 +15,22 @@ mongoose.connect(url)
   })
 
   const phonebookEntrySchema = new mongoose.Schema({
-    name: String,
-    number: String
+    name: {
+      type: String,
+      required: true,
+      minlength: 3 // Ensures the name has at least three characters
+  },
+  number: {
+    type: String,
+    required: true,
+    validate: {
+        validator: function(v) {
+            // Regular expression to match the required format
+            return /^\d{2,3}-\d{7,}$/i.test(v);
+        },
+        message: props => `${props.value} is not a valid phone number!`
+    }
+  }
 })
 
 phonebookEntrySchema.set('toJSON', {
@@ -26,5 +40,9 @@ phonebookEntrySchema.set('toJSON', {
       delete returnedObject.__v
     }
   })
+
+  const PhonebookEntry = mongoose.model('PhonebookEntry', phonebookEntrySchema);
+
+  module.exports = PhonebookEntry;
 
   module.exports = mongoose.model('Person', phonebookEntrySchema)

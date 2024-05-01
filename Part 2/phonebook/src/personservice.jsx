@@ -19,9 +19,14 @@ const create = newPerson => {
     },
     body: JSON.stringify(newPerson),
   })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Failed to add person: ' + response.statusText);
+      }
+      return response.json();
+    })
     .catch(error => {
-      console.error('Error adding person:', error);
+      console.error('Error adding person:', error.message);
       throw error;
     });
 };
