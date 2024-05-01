@@ -7,6 +7,7 @@ const morgan = require('morgan');
 const cors = require('cors');
 const PhonebookEntry = require('./models/phonebook');
 
+
 app.use(morgan('tiny'));
 app.use(express.json());
 app.use(cors());
@@ -33,7 +34,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 });
 
 app.delete('/api/persons/:id', (req, res, next) => {
-    PhonebookEntry.findByIdAndRemove(req.params.id)
+    PhonebookEntry.findByIdAndDelete(req.params.id)
         .then(() => {
             res.status(204).end();
         })
@@ -84,7 +85,7 @@ app.get('/info', (req, res, next) => {
 
 app.use((err, req, res, next) => {
     console.error(err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+    res.status(500).json({ error: err.message || 'Something went wrong!' });
 });
 
 app.listen(PORT, () => {
