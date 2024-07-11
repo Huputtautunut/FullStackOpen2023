@@ -1,17 +1,10 @@
-// routes/blogs.js
-
 const express = require('express');
 const router = express.Router();
-const Blog = require('../models/blog');
+const blogController = require('../controllers/blogController.js');
 
-router.get('/', async (req, res) => {
-  try {
-    const blogs = await Blog.find({});
-    res.json(blogs);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
+router.get('/', blogController.getAllBlogs);
+router.post('/', blogController.createBlog);
+router.put('/:id', blogController.updateBlog); // Route for updating a blog
+router.delete('/:id', blogController.deleteBlog);
 
 module.exports = router;
-

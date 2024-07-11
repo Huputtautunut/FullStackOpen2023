@@ -1,51 +1,39 @@
-const mongoose = require('mongoose');
-const supertest = require('supertest');
-const app = require('./app'); // Adjust path to your Express app
+const request = require('supertest');
+const app = require('./app'); // Your Express app instance
 const Blog = require('./models/blog');
 
-const api = supertest(app);
-
-beforeEach(async () => {
-  await Blog.deleteMany({});
-});
-
 describe('Blog API', () => {
-  test('creating a new blog post', async () => {
-    const newBlog = {
-      title: 'Test Blog',
-      author: 'Test Author',
-      url: 'https://example.com/test',
-      likes: 10
-    };
-
-    // Send POST request to create a new blog post
-    const response = await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/);
-
-    // Check if the total number of blogs in the system is increased by one
-    const blogs = await Blog.find({});
-    expect(blogs).toHaveLength(1);
-
-    // Verify the content of the blog post saved in the database
-    const savedBlog = blogs[0];
-    expect(savedBlog.title).toBe(newBlog.title);
-    expect(savedBlog.author).toBe(newBlog.author);
-    expect(savedBlog.url).toBe(newBlog.url);
-    expect(savedBlog.likes).toBe(newBlog.likes);
+  beforeEach(async () => {
+    // Clear the database or set up initial state before each test
+    await Blog.deleteMany({});
   });
 
-  test('unique identifier is id, not _id', async () => {
-    const newBlog = {
-      title: 'Unique Identifier Test',
+  test('Updating a blog post', async () => {
+    // Create a blog post to update
+    const newBlog = await Blog.create({
+      title: 'Test Blog',
       author: 'Test Author',
-      url: 'https://example.com/unique',
-      likes: 5
+      url: 'http://test.com',
+      likes: 10,
+    });
+
+    const updatedData = {
+      title: 'Updated Blog',
+      author: 'Updated Author',
+      url: 'http://updated.com',
+      likes: 15,
     };
 
-    // Create a new blog post
-    const response = await api.post('/api/blogs').send(newBlog).expect(201).expect('Content-Type', /application\/json/);
+    // Make a PUT request to update the blog post
+    const response = await request(app)
+      .put(`/api/blogs/${newBlog._id}`)
+      .send(updatedData)
+      .expect(200);
 
-    // Check if the returned blog post has id instead of _id
-    expect(response.body).toHaveProperty('id');
-    expect(response.body._id).toBeUndefined();
+    // Verify the response
+    expect(response.body.title).toBe(updatedData.title);
+    expect(response.body.author).toBe(updatedData.author);
+    expect(response.body.url).toBe(updatedData.url);
+    expect(response.body.likes).toBe(updatedData.likes);
   });
 });

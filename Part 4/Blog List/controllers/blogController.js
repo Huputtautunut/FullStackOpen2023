@@ -18,18 +18,42 @@ exports.createBlog = async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: 'Bad request' });
   }
-
-  exports.deleteBlog = async (req, res) => {
-    try {
-      const blogId = req.params.id;
-      const deletedBlog = await Blog.findByIdAndDelete(blogId);
-  
-      if (!deletedBlog) {
-        return res.status(404).json({ error: 'Blog not found' });
-      }
-  
-      res.status(204).end(); // No content response
-    } catch (error) {
-      res.status(500).json({ error: 'Internal server error' });
-    }
 };
+
+exports.updateBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const { title, author, url, likes } = req.body;
+
+    const updatedBlog = await Blog.findByIdAndUpdate(
+      blogId,
+      { title, author, url, likes },
+      { new: true } // Return the updated document
+    );
+
+    if (!updatedBlog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    res.json(updatedBlog);
+  } catch (error) {
+    res.status(400).json({ error: 'Bad request' });
+  }
+};
+
+
+exports.deleteBlog = async (req, res) => {
+  try {
+    const blogId = req.params.id;
+    const deletedBlog = await Blog.findByIdAndDelete(blogId);
+
+    if (!deletedBlog) {
+      return res.status(404).json({ error: 'Blog not found' });
+    }
+
+    res.status(204).end(); // No content response
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
