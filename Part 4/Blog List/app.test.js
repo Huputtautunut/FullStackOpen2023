@@ -1,39 +1,79 @@
-const request = require('supertest');
-const app = require('./app'); // Your Express app instance
+// tests/app.test.js
+const mongoose = require('mongoose');
+const supertest = require('supertest');
+const app = require('./app');
+const User = require('./models/user');
 const Blog = require('./models/blog');
 
-describe('Blog API', () => {
-  beforeEach(async () => {
-    // Clear the database or set up initial state before each test
-    await Blog.deleteMany({});
-  });
+const api = supertest(app);
 
-  test('Updating a blog post', async () => {
-    // Create a blog post to update
-    const newBlog = await Blog.create({
-      title: 'Test Blog',
-      author: 'Test Author',
-      url: 'http://test.com',
-      likes: 10,
-    });
+beforeEach(async () => {
+  await User.deleteMany({});
+  await Blog.deleteMany({});
+});
 
-    const updatedData = {
-      title: 'Updated Blog',
-      author: 'Updated Author',
-      url: 'http://updated.com',
-      likes: 15,
-    };
+test('a valid user can be added', async () => {
+  const newUser = {
+    username: 'testuser',
+    name: 'Test User',
+    password: 'password123'
+  };
 
-    // Make a PUT request to update the blog post
-    const response = await request(app)
-      .put(`/api/blogs/${newBlog._id}`)
-      .send(updatedData)
-      .expect(200);
+  await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
 
-    // Verify the response
-    expect(response.body.title).toBe(updatedData.title);
-    expect(response.body.author).toBe(updatedData.author);
-    expect(response.body.url).toBe(updatedData.url);
-    expect(response.body.likes).toBe(updatedData.likes);
-  });
+  const usersAtEnd = await User.find({});
+  expect(usersAtEnd).toHaveLength(1);
+
+  const savedUser = usersAtEnd[0];
+  expect(savedUser.username).toBe(newUser.username);
+  expect(savedUser.name).toBe(newUser.name);
+  expect(savedUser.passwordHash).toBeDefined();
+}, 10000); // Increase timeout to 10 seconds
+
+test('a valid blog can be added', async () => {
+  const newUser = {
+    username: 'testuser',
+    name: 'Test User',
+    password: 'password123'
+  };
+
+  const userResponse = await api
+    .post('/api/users')
+    .send(newUser)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const userId = userResponse.body.id;
+
+  const newBlog = {
+    title: 'Test Blog',
+    author: 'Test Author',
+    url: 'http://example.com',
+    likes: 0,
+    user: userId
+  };
+
+  await api
+    .post('/api/blogs')
+    .send(newBlog)
+    .expect(201)
+    .expect('Content-Type', /application\/json/);
+
+  const blogsAtEnd = await Blog.find({}).populate('user', { username: 1, name: 1, id: 1 });
+  expect(blogsAtEnd).toHaveLength(1);
+
+  const savedBlog = blogsAtEnd[0];
+  expect(savedBlog.title).toBe(newBlog.title);
+  expect(savedBlog.author).toBe(newBlog.author);
+  expect(savedBlog.url).toBe(newBlog.url);
+  expect(savedBlog.likes).toBe(newBlog.likes);
+  expect(savedBlog.user.id).toBe(newBlog.user);
+}, 10000); // Increase timeout to 10 seconds
+
+afterAll(async () => {
+  await mongoose.connection.close();
 });

@@ -1,59 +1,51 @@
 const Blog = require('../models/blog');
+const User = require('../models/user');
+const jwt = require('jsonwebtoken');
 
-exports.getAllBlogs = async (req, res) => {
-  try {
-    const blogs = await Blog.find({});
-    res.json(blogs);
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
+const createBlog = async (req, res) => {
+  const { title, author, url, likes } = req.body;
+  
+  // Get the token from the authorization header
+  const authorization = req.get('authorization');
+  if (!authorization || !authorization.toLowerCase().startsWith('bearer ')) {
+    return res.status(401).json({ error: 'Unauthorized: Missing or invalid token' });
   }
-};
-
-exports.createBlog = async (req, res) => {
+  const token = authorization.substring(7);
+  
+  // Verify the token
+  let decodedToken;
   try {
-    const { title, author, url, likes } = req.body;
-    const newBlog = new Blog({ title, author, url, likes });
+    decodedToken = jwt.verify(token, process.env.JWT_SECRET);
+  } catch (error) {
+    return res.status(401).json({ error: 'Unauthorized: Invalid token' });
+  }
+  
+  // Find the user based on the decoded token
+  const user = await User.findById(decodedToken.id);
+  if (!user) {
+    return res.status(401).json({ error: 'Unauthorized: User not found' });
+  }
+  
+  // Create a new blog with the user as the creator
+  const newBlog = new Blog({
+    title,
+    author,
+    url,
+    likes,
+    user: user._id
+  });
+  
+  try {
     const savedBlog = await newBlog.save();
+    // Add the new blog to the user's blogs array
+    user.blogs = user.blogs.concat(savedBlog._id);
+    await user.save();
     res.status(201).json(savedBlog);
   } catch (error) {
     res.status(400).json({ error: 'Bad request' });
   }
 };
 
-exports.updateBlog = async (req, res) => {
-  try {
-    const blogId = req.params.id;
-    const { title, author, url, likes } = req.body;
-
-    const updatedBlog = await Blog.findByIdAndUpdate(
-      blogId,
-      { title, author, url, likes },
-      { new: true } // Return the updated document
-    );
-
-    if (!updatedBlog) {
-      return res.status(404).json({ error: 'Blog not found' });
-    }
-
-    res.json(updatedBlog);
-  } catch (error) {
-    res.status(400).json({ error: 'Bad request' });
-  }
+module.exports = {
+  createBlog
 };
-
-
-exports.deleteBlog = async (req, res) => {
-  try {
-    const blogId = req.params.id;
-    const deletedBlog = await Blog.findByIdAndDelete(blogId);
-
-    if (!deletedBlog) {
-      return res.status(404).json({ error: 'Blog not found' });
-    }
-
-    res.status(204).end(); // No content response
-  } catch (error) {
-    res.status(500).json({ error: 'Internal server error' });
-  }
-};
-

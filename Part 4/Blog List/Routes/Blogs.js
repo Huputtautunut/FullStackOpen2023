@@ -1,10 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const blogController = require('../controllers/blogController.js');
+const verifyToken = require('../controllers/login');
+const blogController = require('../controllers/blogController');
 
-router.get('/', blogController.getAllBlogs);
-router.post('/', blogController.createBlog);
-router.put('/:id', blogController.updateBlog); // Route for updating a blog
-router.delete('/:id', blogController.deleteBlog);
+router.post('/', verifyToken, blogController.createBlog);
 
 module.exports = router;
