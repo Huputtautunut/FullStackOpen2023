@@ -1,21 +1,30 @@
 module.exports = {
-  root: true,
-  env: { browser: true, es2020: true },
+  env: {
+    browser: true,
+    es2021: true,
+  },
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
-    'plugin:react/jsx-runtime',
-    'plugin:react-hooks/recommended',
   ],
-  ignorePatterns: ['dist', '.eslintrc.cjs'],
-  parserOptions: { ecmaVersion: 'latest', sourceType: 'module' },
-  settings: { react: { version: '18.2' } },
-  plugins: ['react-refresh'],
-  rules: {
-    'react-refresh/only-export-components': [
-      'warn',
-      { allowConstantExport: true },
-    ],
-    'react/prop-types': false
+  parserOptions: {
+    ecmaFeatures: {
+      jsx: true,
+    },
+    ecmaVersion: 'latest',
+    sourceType: 'module',
   },
-}
+  plugins: [
+    'react',
+  ],
+  rules: {
+    'react/prop-types': 'warn', // Warn if PropTypes are not used
+    'no-unused-vars': 'warn', // Warn for unused variables
+    'react/react-in-jsx-scope': 'off', // React 17 and higher does not require React in scope
+  },
+  settings: {
+    react: {
+      version: 'detect', // Detect the installed version of React
+    },
+  },
+};

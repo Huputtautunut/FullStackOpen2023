@@ -1,12 +1,11 @@
-import { useState } from 'react'
-import blogService from '../services/blogs'
+import React, { useState } from 'react'
 
-const NewBlogForm = ({ setBlogs, blogs }) => {
+const NewBlogForm = ({ handleAddBlog }) => {
+  const [showForm, setShowForm] = useState(false)
   const [newBlog, setNewBlog] = useState({
     title: '',
     author: '',
-    url: '',
-    likes: 0 // You can set default values or let the user input them
+    url: ''
   })
 
   const handleInputChange = (event) => {
@@ -14,51 +13,38 @@ const NewBlogForm = ({ setBlogs, blogs }) => {
     setNewBlog({ ...newBlog, [name]: value })
   }
 
-  const addBlog = async (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    try {
-      const createdBlog = await blogService.create(newBlog)
-      setBlogs([...blogs, createdBlog])
-      setNewBlog({ title: '', author: '', url: '', likes: 0 }) // Reset form fields
-    } catch (error) {
-      console.error('Error adding blog:', error)
-    }
+    await handleAddBlog(newBlog)
+    setNewBlog({ title: '', author: '', url: '' })
+    setShowForm(false) // Hide the form after blog is added
+  }
+
+  if (!showForm) {
+    return (
+      <div>
+        <button onClick={() => setShowForm(true)}>Create New Blog</button>
+      </div>
+    )
   }
 
   return (
-    <form onSubmit={addBlog}>
-      <div>
-        <label>Title:</label>
-        <input
-          type="text"
-          name="title"
-          value={newBlog.title}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div>
-        <label>Author:</label>
-        <input
-          type="text"
-          name="author"
-          value={newBlog.author}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <div>
-        <label>URL:</label>
-        <input
-          type="text"
-          name="url"
-          value={newBlog.url}
-          onChange={handleInputChange}
-          required
-        />
-      </div>
-      <button type="submit">Add Blog</button>
-    </form>
+    <div>
+      <h2>Create New Blog</h2>
+      <form onSubmit={handleSubmit}>
+        <div>
+          Title: <input type="text" name="title" value={newBlog.title} onChange={handleInputChange} />
+        </div>
+        <div>
+          Author: <input type="text" name="author" value={newBlog.author} onChange={handleInputChange} />
+        </div>
+        <div>
+          URL: <input type="text" name="url" value={newBlog.url} onChange={handleInputChange} />
+        </div>
+        <button type="submit">Create</button>
+      </form>
+      <button onClick={() => setShowForm(false)}>Cancel</button>
+    </div>
   )
 }
 
