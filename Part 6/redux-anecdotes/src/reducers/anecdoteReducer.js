@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { setNotification } from './notificationReducer';
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
@@ -51,7 +52,11 @@ export const fetchAnecdotes = () => async dispatch => {
   
       const response = await axios.patch(`http://localhost:3001/anecdotes/${id}`, updatedAnecdote);
       dispatch(voteAnecdote(response.data)); // Update state with updated anecdote
-    } catch (error) {
+    
+    dispatch(setNotification(`You voted '${anecdoteToVote.content}'`, 10));
+  } 
+    
+    catch (error) {
       console.error('Error voting for anecdote:', error);
       // Handle error if needed
     }
