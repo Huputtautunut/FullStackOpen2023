@@ -1,12 +1,5 @@
-Command promptiin ja 
+Command promptiin ja
 set NODE_ENV=production&& node index.js
-
-
-
-
-
-
-
 
 Running the app
 
