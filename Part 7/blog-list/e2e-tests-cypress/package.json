@@ -1,0 +1,14 @@
+{
+    "name": "frontend",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {},
+    "scripts": {
+      "cypress:open": "cypress open",
+      "test:e2e": "cypress run"
+    },
+    "devDependencies": {
+      "cypress": "^12.3.0"
+    }
+  }
+  
