@@ -1,13 +1,15 @@
+// src/components/Notification.jsx
+
 import { useNotification } from '../NotificationContext';
 
 const Notification = () => {
-  const { state: notification } = useNotification();
+  const { state: notificationState } = useNotification();
 
-  if (!notification) {
+  if (!notificationState.message) {
     return null;
   }
 
-  const { message, type } = notification;
+  const { message, type } = notificationState;
 
   const style = {
     backgroundColor: 'lightgrey',

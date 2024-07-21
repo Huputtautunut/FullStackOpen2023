@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import storage from '../services/storage';
 
-const Blog = ({ blog, handleVote, handleDelete }) => {
+const Blog = ({ blog, handleLike, handleDelete }) => {
   const [visible, setVisible] = useState(false);
 
   const nameOfUser = blog.user ? blog.user.name : 'anonymous';
@@ -31,7 +31,7 @@ const Blog = ({ blog, handleVote, handleDelete }) => {
           </div>
           <div>
             likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
+            <button style={{ marginLeft: 3 }} onClick={() => handleLike(blog)}>
               like
             </button>
           </div>
@@ -52,7 +52,7 @@ Blog.propTypes = {
     likes: PropTypes.number.isRequired,
     user: PropTypes.object,
   }).isRequired,
-  handleVote: PropTypes.func.isRequired,
+  handleLike: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
 };
 
