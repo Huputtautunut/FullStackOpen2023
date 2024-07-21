@@ -1,5 +1,5 @@
 import React, { useState, useEffect, createRef } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import loginService from './services/login';
 import storage from './services/storage';
 import Login from './components/Login';
@@ -9,6 +9,10 @@ import Notification from './components/Notification';
 import Togglable from './components/Togglable';
 import { useBlogs, useCreateBlog, useLikeBlog, useDeleteBlog } from './hooks/useBlogs';
 import Users from './components/Users';
+import UserDetails from './components/UserDetails';
+import BlogDetails from './components/BlogDetails';
+import NavigationMenu from './components/NavigationMenu';
+import './App.css';
 
 const App = () => {
   const { data: blogs = [], isLoading, error } = useBlogs();
@@ -94,20 +98,14 @@ const App = () => {
   return (
     <Router>
       <div>
+        <NavigationMenu user={user} handleLogout={handleLogout} />
         <h2>blogs</h2>
         <Notification notification={notification} />
         {user ? (
-          <div>
-            <div>
-              {user.name} logged in
-              <button onClick={handleLogout}>logout</button>
-            </div>
+          <>
             <Togglable buttonLabel="create new blog" ref={blogFormRef}>
               <NewBlog doCreate={handleCreate} />
             </Togglable>
-            <nav>
-              <Link to="/">home</Link> | <Link to="/users">users</Link>
-            </nav>
             <Routes>
               <Route path="/" element={
                 blogs.sort((a, b) => b.likes - a.likes).map((blog) => (
@@ -120,8 +118,10 @@ const App = () => {
                 ))
               } />
               <Route path="/users" element={<Users />} />
+              <Route path="/users/:id" element={<UserDetails />} />
+              <Route path="/blogs/:id" element={<BlogDetails />} />
             </Routes>
-          </div>
+          </>
         ) : (
           <Login doLogin={handleLogin} />
         )}

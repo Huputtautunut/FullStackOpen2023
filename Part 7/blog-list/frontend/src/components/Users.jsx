@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { useQuery } from 'react-query';
 import userService from '../services/users';
 import Notification from './Notification';
@@ -17,7 +18,7 @@ const Users = () => {
   return (
     <div>
       <h2>Users</h2>
-      <Notification notification={null} /> {/* You can use this if you want to add notifications */}
+      <Notification notification={null} />
       <table>
         <thead>
           <tr>
@@ -29,7 +30,7 @@ const Users = () => {
         <tbody>
           {users.map(user => (
             <tr key={user.id}>
-              <td>{user.username}</td>
+              <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
               <td>{user.name}</td>
               <td>{user.blogs.length}</td>
             </tr>

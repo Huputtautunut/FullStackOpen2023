@@ -12,4 +12,10 @@ const getAll = () => {
   return request.then(response => response.data);
 };
 
-export default { getAll };
+// Fetch a user by ID with their blogs
+const getById = (id) => {
+  const request = axios.get(`${baseUrl}/${id}`, getConfit());
+  return request.then(response => response.data);
+};
+
+export default { getAll, getById };

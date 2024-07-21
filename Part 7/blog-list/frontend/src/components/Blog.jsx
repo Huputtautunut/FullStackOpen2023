@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { Link } from 'react-router-dom';
 import storage from '../services/storage';
 
-const Blog = ({ blog, handleLike, handleDelete }) => {
+const Blog = ({ blog, handleVote, handleDelete }) => {
   const [visible, setVisible] = useState(false);
 
   const nameOfUser = blog.user ? blog.user.name : 'anonymous';
@@ -16,11 +17,9 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
 
   const canRemove = blog.user ? blog.user.username === storage.me() : true;
 
-  console.log(blog.user, storage.me(), canRemove);
-
   return (
     <div style={style} className="blog">
-      {blog.title} by {blog.author}
+      <Link to={`/blogs/${blog.id}`}>{blog.title}</Link> by {blog.author}
       <button style={{ marginLeft: 3 }} onClick={() => setVisible(!visible)}>
         {visible ? 'hide' : 'view'}
       </button>
@@ -31,7 +30,7 @@ const Blog = ({ blog, handleLike, handleDelete }) => {
           </div>
           <div>
             likes {blog.likes}
-            <button style={{ marginLeft: 3 }} onClick={() => handleLike(blog)}>
+            <button style={{ marginLeft: 3 }} onClick={() => handleVote(blog)}>
               like
             </button>
           </div>
@@ -52,7 +51,7 @@ Blog.propTypes = {
     likes: PropTypes.number.isRequired,
     user: PropTypes.object,
   }).isRequired,
-  handleLike: PropTypes.func.isRequired,
+  handleVote: PropTypes.func.isRequired,
   handleDelete: PropTypes.func.isRequired,
 };
 

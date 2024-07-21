@@ -1,3 +1,5 @@
+// src/services/blogs.js
+
 import axios from 'axios';
 import storage from './storage';
 
@@ -7,24 +9,19 @@ const getConfit = () => ({
   headers: { Authorization: `Bearer ${storage.loadUser().token}` },
 });
 
-const getAll = () => {
-  const request = axios.get(baseUrl);
-  return request.then((response) => response.data);
-};
+const getAll = () => axios.get(baseUrl).then((response) => response.data);
 
-const update = (id, newObject) => {
-  const request = axios.put(`${baseUrl}/${id}`, newObject, getConfit());
-  return request.then((response) => response.data);
-};
+const update = (id, newObject) => axios.put(`${baseUrl}/${id}`, newObject, getConfit()).then((response) => response.data);
 
-const create = async (newObject) => {
-  const response = await axios.post(baseUrl, newObject, getConfit());
-  return response.data;
-};
+const create = (newObject) => axios.post(baseUrl, newObject, getConfit()).then((response) => response.data);
 
-const remove = async (id) => {
-  const response = await axios.delete(`${baseUrl}/${id}`, getConfit());
-  return response.data;
-};
+const remove = (id) => axios.delete(`${baseUrl}/${id}`, getConfit()).then((response) => response.data);
 
-export default { getAll, create, update, remove };
+// Comments endpoints
+const getComments = (blogId) => axios.get(`${baseUrl}/${blogId}/comments`).then((response) => response.data);
+
+const addComment = (blogId, comment) => axios.post(`${baseUrl}/${blogId}/comments`, comment, getConfit()).then((response) => response.data);
+
+const deleteComment = (commentId) => axios.delete(`/api/comments/${commentId}`, getConfit()).then((response) => response.data);
+
+export default { getAll, create, update, remove, getComments, addComment, deleteComment };
