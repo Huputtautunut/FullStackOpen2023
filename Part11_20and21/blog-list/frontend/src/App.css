@@ -1,0 +1,195 @@
+/* src/App.css */
+
+nav {
+    background-color: #89c7e8;
+    padding: 10px;
+  }
+  
+  nav a {
+    text-decoration: none;
+    color: black;
+    margin-right: 10px;
+  }
+  
+  nav a.active {
+    font-weight: bold;
+  }
+  
+  nav button {
+    background: none;
+    border: none;
+    color: blue;
+    cursor: pointer;
+  }
+  
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  
+  /* Container */
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header */
+  .header {
+    background-color: #282c34;
+    color: #ffffff;
+    padding: 10px 0;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .header h1 {
+    margin: 0;
+  }
+  
+  /* Blog List */
+  .blog-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .blog-item {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .blog-item h2 {
+    margin: 0;
+    font-size: 1.5em;
+  }
+  
+  .blog-item a {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .blog-item a:hover {
+    text-decoration: underline;
+  }
+  
+  .blog-item button {
+    margin-top: 10px;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .blog-item button.like {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  
+  .blog-item button.like:hover {
+    background-color: #0056b3;
+  }
+  
+  .blog-item button.delete {
+    background-color: #dc3545;
+    color: #ffffff;
+  }
+  
+  .blog-item button.delete:hover {
+    background-color: #c82333;
+  }
+  
+  /* Notifications */
+  .notification {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .notification.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .notification.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  /* Login and Create Blog Form */
+  .form-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form-container h2 {
+    margin-top: 0;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .form-group label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  .form-group input,
+  .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+  }
+  
+  .form-group button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .form-group button.submit {
+    background-color: #007bff;
+    color: #ffffff;
+  }
+  
+  .form-group button.submit:hover {
+    background-color: #0056b3;
+  }
+  
+  .form-group button.cancel {
+    background-color: #6c757d;
+    color: #ffffff;
+  }
+  
+  .form-group button.cancel:hover {
+    background-color: #5a6268;
+  }
+  
+  /* Togglable component */
+  .togglable-button {
+    background-color: #007bff;
+    color: #ffffff;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+  }
+  
+  .togglable-button:hover {
+    background-color: #0056b3;
+  }
+ 
